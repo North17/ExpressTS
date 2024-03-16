@@ -32,7 +32,7 @@ UserSchema.pre("save", async function () {
 });
 
 UserSchema.methods.createJWT = function () {
-  if (process.env.JWT_SECRET)
+  if (process.env.JWT_SECRET) {
     return jwt.sign(
       {
         userID: this._id,
@@ -45,6 +45,7 @@ UserSchema.methods.createJWT = function () {
         expiresIn: process.env.JWT_LIFETIME,
       }
     );
+  }
 };
 
 UserSchema.methods.comparePasswords = async function (

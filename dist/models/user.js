@@ -44,7 +44,7 @@ UserSchema.pre("save", function () {
     });
 });
 UserSchema.methods.createJWT = function () {
-    if (process.env.JWT_SECRET)
+    if (process.env.JWT_SECRET) {
         return jsonwebtoken_1.default.sign({
             userID: this._id,
             name: this.name,
@@ -53,6 +53,7 @@ UserSchema.methods.createJWT = function () {
         }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_LIFETIME,
         });
+    }
 };
 UserSchema.methods.comparePasswords = function (candidatePassword) {
     return __awaiter(this, void 0, void 0, function* () {

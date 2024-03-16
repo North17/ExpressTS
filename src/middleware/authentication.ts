@@ -19,6 +19,9 @@ const authenticationMiddleware = (
     req.user = payload;
     next();
   } catch (err) {
+    if (err instanceof Error && err.name === "TokenExpiredError") {
+      throw new UnauthenticatedError("Token expired");
+    }
     throw new UnauthenticatedError("Authentication Invalid");
   }
 };
