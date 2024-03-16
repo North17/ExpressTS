@@ -16,6 +16,10 @@ const express_1 = __importDefault(require("express"));
 require("express-async-errors");
 const connect_1 = __importDefault(require("./db/connect"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const helmet_1 = __importDefault(require("helmet"));
+const cors_1 = __importDefault(require("cors"));
+const xss = require("xss-clean");
+const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const users_1 = __importDefault(require("./routes/users"));
 const timetables_1 = __importDefault(require("./routes/timetables"));
@@ -26,8 +30,15 @@ const admin_only_1 = __importDefault(require("./middleware/admin-only"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT;
-// in-built middleware
+app.set("trust proxy", 1);
+app.use((0, express_rate_limit_1.default)({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+}));
 app.use(express_1.default.json());
+app.use((0, helmet_1.default)());
+app.use((0, cors_1.default)());
+app.use(xss());
 // routers
 app.use("/auth", auth_1.default);
 app.use(authentication_1.default);

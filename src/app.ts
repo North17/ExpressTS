@@ -2,6 +2,10 @@ import express, { Request, Response } from "express";
 import "express-async-errors";
 import connectDB from "./db/connect";
 import dotenv from "dotenv";
+import helmet from "helmet";
+import cors from "cors";
+const xss = require("xss-clean");
+import rateLimit from "express-rate-limit";
 
 import authRouter from "./routes/auth";
 import usersRouter from "./routes/users";
@@ -18,8 +22,17 @@ const app = express();
 
 const port = process.env.PORT;
 
-// in-built middleware
+app.set("trust proxy", 1);
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  })
+);
 app.use(express.json());
+app.use(helmet());
+app.use(cors());
+app.use(xss());
 
 // routers
 app.use("/auth", authRouter);
