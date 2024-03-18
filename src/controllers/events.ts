@@ -4,11 +4,24 @@ import { AuthRequest } from "../types";
 import { StatusCodes } from "http-status-codes";
 import { NotFoundError } from "../errors";
 
+const processEvent = (isAdmin: boolean, event: any) => {
+  return isAdmin
+    ? event
+    : {
+        name: event.name,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        timetableID: event.timetableID,
+        _id: event._id,
+      };
+};
+
 const getAllEvents = async (req: AuthRequest, res: Response) => {
   const { userID, isAdmin } = req.user!;
   const { timetableID } = req.params;
   const events = await Event.find({ userID: userID, timetableID: timetableID });
-  res.status(StatusCodes.OK).json(events);
+  const processedEvents = events.map((event) => processEvent(isAdmin, event));
+  res.status(StatusCodes.OK).json(processedEvents);
 };
 
 const createEvent = async (req: AuthRequest, res: Response) => {
@@ -23,7 +36,8 @@ const createEvent = async (req: AuthRequest, res: Response) => {
     userID,
     timetableID,
   });
-  res.json(event);
+  const processedEvent = processEvent(isAdmin, event);
+  res.status(StatusCodes.OK).json(processedEvent);
 };
 
 const getEvent = async (req: AuthRequest, res: Response) => {
@@ -33,7 +47,8 @@ const getEvent = async (req: AuthRequest, res: Response) => {
   if (!event) {
     throw new NotFoundError(`Event with ID ${eventID} not found`);
   }
-  res.status(StatusCodes.OK).json(event);
+  const processedEvent = processEvent(isAdmin, event);
+  res.status(StatusCodes.OK).json(processedEvent);
 };
 
 const updateEvent = async (req: AuthRequest, res: Response) => {
@@ -48,7 +63,8 @@ const updateEvent = async (req: AuthRequest, res: Response) => {
   if (!event) {
     throw new NotFoundError(`Event with ID ${eventID} not found`);
   }
-  res.status(StatusCodes.OK).json(event);
+  const processedEvent = processEvent(isAdmin, event);
+  res.status(StatusCodes.OK).json(processedEvent);
 };
 
 const deleteEvent = async (req: AuthRequest, res: Response) => {
