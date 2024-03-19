@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Timetable from "../models/timetable";
+import Event from "../models/event";
 import { AuthRequest } from "../types";
 import { StatusCodes } from "http-status-codes";
 import { NotFoundError } from "../errors";
@@ -72,6 +73,7 @@ const deleteTimetable = async (req: AuthRequest, res: Response) => {
     ...queryObject,
     _id: timetableID,
   });
+  const events = await Event.deleteMany({ timetableID });
   if (!timetable) {
     throw new NotFoundError(`Timetable with ID ${timetableID} not found`);
   }
